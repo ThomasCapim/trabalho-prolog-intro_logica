@@ -54,3 +54,39 @@ loves(honey_bunny,pumpkin).
 %% Fazer o oposto, deixando X em branco e dando um nome a Y, vai mostrar todas as pessoas X que tem ciúmes dessa pessoa nomeada em Y.
 %% Por exemplo, escrever "vincent" em X vai ter como resultado "marsellus", pois ambos amam "mia".
 jealous(X,Y):- loves(X,Z), loves(Y,Z).
+
+
+
+
+
+/*
+is_digesting(X, Y) :- just_ate(X, Y).
+is_digesting(X, Y) :-
+    just_ate(X, Z),
+    is_digesting(Z, Y).
+*/
+
+% Regras recursivas chamam a si mesmas. 
+% o fato "just_ate(X, Y)" vai informar que alguém X comeu algo Y.
+% A regra "is_digesting(X, Y)" possui dois casos:
+%   - primeiro: se X comeu Y, então X está digerindo Y;
+%   - ou segundo; Se X já havia comido algo Z, que já comeu outra coisa, então Z está digerindo Y. Como Y está "dentro" de Z, e Z está "dentro" de X, então X também está digerindo Y.
+is_digesting(X, Y) :-
+    just_ate(X, Y);
+    just_ate(X, Z),
+    is_digesting(Z, Y).
+
+
+just_ate(mosquito, blood).
+just_ate(frog, mosquito).
+just_ate(stork, frog).
+
+% Ao perguntar o terminal do Prolog "is_digesting(stork, blood).", primeiro ele vai testar se just_ate(stork, blood) é válido.
+% Como não é, ele vai para o segundo caso:
+%   - O prolog irá chamar o just_ate(stork, Z) para saber que fato existe para just_ate(stork, Z) (no caso, stork e frog).
+%   - Sabendo que stork comeu frog, a regra chama ela mesma, agora sabendo que Z = Frog.
+%   - Este mesmo processo irá se repetir até que a regra is_digesting(X, Y) pare em just_ate(X, Y).
+% Note que sempre é o "Y" de is_digesting(Z, Y) que fica vazio: Ao chegar no último caso, a regra vai retornando esse valor para "Y" da regra anterior que chamou ela, igual funções recursivas em C mesmo.
+numeral(0).
+
+numeral(succ(X)) :- numeral(X).
